@@ -1,0 +1,57 @@
+<?php
+/*
+$childIsActive = false;
+foreach ($this->container as $page) {
+	if ($page->isActive())
+		$childIsActive = true;
+}
+
+$parentPrinted = false;
+
+foreach ($this->container as $page) {
+	die(var_export($page->getParent(), true));
+	if (!$parentPrinted && $page->getParent())
+	{
+		echo "<li";
+		if (!$childIsActive)
+			echo " class='active'";
+		echo ">";
+		$parent = $page->getParent();
+		echo $this->navigation()->menu()->htmlify($parent) . PHP_EOL;
+		echo "</li>";
+
+		$parentPrinted = true;
+	}
+
+	echo "<li";
+	if ($page->isActive())
+		echo " class='active'";
+	echo ">";
+	echo $this->navigation()->menu()->htmlify($page) . PHP_EOL;
+	echo "</li>";
+}
+ */
+
+$container = $this->navigation()->menu();
+/* @var $container \Zend\View\Helper\Navigation\Breadcrumbs */
+$navigation = $container->getContainer();
+/* @var $navigation \Zend\Navigation\Navigation */
+?>
+<ul class="nav nav-pills">
+    <?php $active = $container->findActive($navigation) ?>
+    <?php foreach($container as $page): ?>
+        <?php /* @var $page \Zend\Navigation\Page\Mvc */ ?>
+        <?php if( ! $page->isActive()): ?>
+            <li>
+                <a href="<?php echo $page->getHref() ?>"><?php echo $page->getLabel() ?></a> 
+                <span class="divider">/</span>
+            </li>
+        <?php else: ?>
+            <li class="active">
+                <?php if($container->getLinkLast()): ?><a href="<?php echo $page->getHref() ?>"><?php endif ?>
+                <?php echo $page->getLabel() ?>
+                <?php if($container->getLinkLast()): ?><a href="<?php echo $page->getHref() ?>"><?php endif ?>
+            </li>
+        <?php endif ?>
+    <?php endforeach ?>
+</ul>

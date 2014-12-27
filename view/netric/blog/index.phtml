@@ -1,0 +1,50 @@
+<div class='page'>
+	<div class="container">
+		<div class="row">
+			<div class='col-md-12'>
+				<h1 class='pageTitle'><?php echo $this->title; ?></h1>
+			</div>
+		</div>
+
+		<div class="row">
+
+			<!-- left size -->
+			<div class="col-md-9">
+				<?php foreach ($this->posts as $post) : ?>
+					<div class="mgb2">
+						<?php if ($post->getValue("image")) : ?> 
+							<img src="//<?php echo $this->netricServer; ?>/files/<?php echo $post->getValue("image"); ?>" class="pull-left img-responsiv" />
+						<?php endif; ?>
+						<a href="/blog/<?php echo $post->getValue("uname"); ?>" 
+						   title="<?php echo $post->getValue("title"); ?>">
+							<h3><?php echo $post->getValue("title"); ?></h3>
+						</a>
+						<p>
+							<?php echo $post->getTeaser(64); ?>...
+							<a href="/blog/<?php echo $post->getValue("uname"); ?>" 
+							   title="<?php echo $post->getValue("title"); ?>">Read Full Article</a>
+						</p>
+						<div class='clearfix'></div>
+					</div>
+				<?php endforeach; ?>
+				
+			</div>
+			<!-- end: left side -->
+			
+			<!-- right side -->
+			<div class="col-md-3">
+				<div class="sidebar hidden-print hidden-xs hidden-sm affix-top">
+
+					<?php echo $this->categories; ?>
+					
+					<?php echo $this->share; ?>
+					
+					<?php echo $this->subscribe; ?>
+
+				</div>
+			</div>
+			<!-- end: right side -->
+			
+		</div>
+	</div>
+</div>

@@ -1,0 +1,21 @@
+<?php
+	if (!$this->siteUrl)
+		$this->siteUrl = "https://" . $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
+?>
+
+<div class="mgb2">
+    <h4>Share</h4>
+    Put share stuff here by overriding:
+    / view_manager / template_map / "sharethis" in the global config
+    <!--
+    <div class='socialShare'>
+        <!-- facebook --
+        <div class="fb-like" data-href="<?php echo $this->siteUrl; ?>" data-send="true" 
+             data-layout="button_count" data-width="230" data-show-faces="true"></div>
+        <!-- end: facebook --
+
+        <!-- twitter --
+        <a href="#" onclick="javascript:window.open('http://twitter.com/share?url=<?php echo rawurlencode($this->siteUrl); ?>&text=' + encodeURI(document.title),'tweet','status=1,width=600,height=450,left=331,top=255');return false;"><img src="/img/netric/social_icons/tweet_button.png"></a>
+    </div>
+    -->
+</div>

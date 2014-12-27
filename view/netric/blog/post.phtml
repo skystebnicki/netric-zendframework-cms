@@ -1,0 +1,90 @@
+<?php
+	// Set RDFA doctype for open graph extensions
+	$this->doctype(XHTML1_RDFA);
+	$this->headMeta()->setProperty('og:type', 'article');
+	$this->headMeta()->setProperty('og:title', $this->title);
+	$this->headMeta()->setProperty('og:description', $this->post->getTeaser(50));
+	$this->headMeta()->setProperty('description', $this->post->getTeaser(50));
+	if ($post->getValue("image"))
+		$this->headMeta()->setProperty('og:image', "http://{$this->netricServer}/files/" . $post->getValue("image"));
+?>
+<div class='page'>
+	<div class='container'>
+		<div class="row">
+			<div class='col-md-12'>
+				<h1 class='pageTitle'><?php echo $this->title; ?></h1>
+				<?php
+					$subHeader = "";
+
+					if ($this->dateAndTime)
+						$subHeader = date("m/d/Y h:i A", $this->dateAndTime);
+
+					if ($this->author)
+					{
+						if ($subHeader)
+							$subHeader .= " | ";
+
+						$subHeader .= $this->author;
+					}
+
+					if ($subHeader)
+						echo "<h4 class='blog-subheader'>$subHeader</h4>";
+
+				?>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-md-9">
+				<div class='blogArticle' id='blog-post-body'>
+					<?php if ($post->getValue("image")) : ?> 
+						<img src="//<?php echo $this->netricServer; ?>/files/<?php echo $post->getValue("image"); ?>" class="pull-left img-responsive" id="blog-post-image" />
+					<?php endif; ?>
+					<?php echo $this->post->getValue("data"); ?>
+				</div>
+				
+				<?php echo $this->comments; ?>
+			</div>
+			
+			<div class="col-md-3">
+				<div class="sidebar hidden-print hidden-xs hidden-sm affix-top">
+					<div id='blog-post-back'>
+						<a href="/blog" class="btn btn-default"><i class="glyphicon glyphicon-chevron-left"></i> View More Articles</a>
+					</div>
+
+					<?php echo $this->about; ?>
+					
+					<?php echo $this->share; ?>
+					
+					<?php echo $this->subscribe; ?>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script style="text/javascript">
+	$(document).ready(function(){
+		// Resize main image to remove float if it's bigger than 50% of body
+		$(window).resize(function() {
+
+			$img = $("#blog-post-image");
+
+			if ($img.length == 0) {
+				return;
+			}
+
+			// If images have not poplated yet, then just wait
+			if ($img.height() == 0)
+			{
+				setTimeout("$(window).trigger('resize');",1000);
+				return;
+			}
+
+			if ($img.width() >= ($('#blog-post-body').width()/2)) {
+				$img.removeClass("pull-left");
+			}
+		}).trigger('resize');
+	});
+</script>

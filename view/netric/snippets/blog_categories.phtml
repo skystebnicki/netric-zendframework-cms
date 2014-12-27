@@ -1,0 +1,15 @@
+<div class="mgb2">
+    <h4>Categories</h4>
+    <?php
+        echo "<ul class='nav nav-pills nav-stacked'>";
+        echo "<li " . ((!$this->currentCategory) ? "class='active'" : '') . "><a href=\"/blog\">All Articles</a></li>";
+
+        foreach ($this->categories as $cat)
+		{
+			echo "<li " . (($this->currentCategory == $cat->id) ? "class='active'" : '') . ">
+					<a href=\"/blog/category/" . $cat->uname . "\">" . $cat->title . "</a></li>";
+		}
+
+        echo "</ul>";
+    ?>
+</div>

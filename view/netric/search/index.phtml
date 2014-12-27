@@ -1,0 +1,15 @@
+<div class='page'>
+	<div class='container'>
+		<?php if ($this->q) : ?>
+			<h1>Search results for: "<?php echo $this->q; ?>"</h1>
+			<?php if ($this->results) : ?>
+				<?php foreach ($this->results as $result) : ?>
+					<a href="<?php echo $result['url']; ?>"><h4><?php echo $result['type_label']; ?>: <?php echo $result['title']; ?></h4></a>
+					<p><?php echo $result['teaser']; ?></p>
+				<?php endforeach; ?>
+			<?php else : ?>
+				<p class='lead'>No results found</p>
+			<?php endif; ?>
+		<?php endif; ?>
+	</div>
+</div>

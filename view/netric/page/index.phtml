@@ -1,0 +1,50 @@
+<div data-netric-id="<?php echo $this->id; ?>" data-netric-type="cms_page" class='page'>
+	<?php 
+		if ($this->navigation('CmsNavigation')->breadcrumbs()->render())
+		{
+			echo "<div id='breadcrumbs'>";
+			echo "<div class='container'>";
+			echo $this->navigation('CmsNavigation')->breadcrumbs()->setPartial(array('breadcrumb','default'));
+			echo "</div>";
+			echo "</div>";
+		}
+
+		if ($this->navPage)
+		{
+			if ($this->navPage->count() > 0)
+				$rootPage = $this->navPage;
+			else if ($this->navPage->getParent())
+				$rootPage = $this->navPage->getParent();
+
+			if ($rootPage && $rootPage->label)
+			{
+				echo "<div id='subnav'>";
+				echo "<div class='container'>";
+
+
+				echo "<ul class='nav nav-pills'>";
+				echo "<li";
+				if ($rootPage->id == $this->id)
+					echo " class='active'";
+				echo "><a href='" . $rootPage->getUri() . "'>" . $rootPage->label . "</a></li>";
+				foreach ($rootPage as $page)
+				{
+					echo "<li";
+					if ($page->id == $this->id)
+						echo " class='active'";
+					echo "><a href='";
+                    if ($page instanceof \Zend\Navigation\Page\Mvc)
+                        echo $page->getRoute();
+                    else
+                        echo $page->getUri();
+					echo "'>" . $page->label . "</a></li>";
+				}
+				echo "</ul>";
+				echo "</div>";
+				echo "</div>";
+			}
+		}
+		
+		echo $this->body; 
+	?>
+</div>
