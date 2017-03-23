@@ -50,11 +50,11 @@ class Module
                     $config = $sm->get('Config');
                     
                     // Create datamapper based on configuration
-                    switch ($config["db"]["type"])
+                    switch ($config["cms_db"]["type"])
                     {
                     case "elastic":
-                        $dataMapper = new \Netric\Models\DataMapper\ElasticDataMapper($config["db"]["host"], 
-                                                                                      $config["db"]["name"]);
+                        $dataMapper = new \Netric\Models\DataMapper\ElasticDataMapper($config["cms_db"]["host"], 
+                                                                                      $config["cms_db"]["name"]);
                         break;
                     
                     default:

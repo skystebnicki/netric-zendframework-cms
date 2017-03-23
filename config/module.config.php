@@ -230,7 +230,7 @@ return array(
 		),
     ),
     // Local database settings
-    'db' => array(
+    'cms_db' => array(
         'type' => "elastic",
         'host' => "localhost",
         'name' => "netric_cms",
