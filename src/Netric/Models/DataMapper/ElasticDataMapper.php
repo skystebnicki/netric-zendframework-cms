@@ -751,7 +751,7 @@ class ElasticDataMapper extends Models\DataMapperAbstract  implements Models\Dat
 		{
             $ret = $index->create($mapping);
 			//$ret = $this->client->request($this->indexName, Elastica\Request::PUT, $mapping);
-		} 
+		}
 		catch(Elastica\Exception\ResponseException $e) 
 		{
             // TODO: log here
