@@ -34,9 +34,6 @@ class Module
 		// from a controller with:
 		// $postloader = $this->getServiceLocator()->get("PostLoader");
 		return array(
-			'invokables' => array(
-				'PostDataMapper' => "Netric\Models\PostDataMapper",
-			),
 			'factories' => array(
 				'CmsNavigation' => 'Netric\Navigation\CmsNavigationFactory',
                 
@@ -44,28 +41,6 @@ class Module
                 'EntityLoader' => function($sm) {          
                     $im = new \Netric\Models\IdentityMap($sm->get("NetricApi"));
                     return $im;
-                },
-                        
-                // Get the local configured datamapper
-                'DataMapper' => function($sm) {
-                    $config = $sm->get('Config');
-
-                    $dataMapper = new \Netric\Models\DataMapper\ApiDataMapper($config["netric"]["server"],
-                        $config["netric"]["username"],
-                        $config["netric"]["password"]);
-                    $dataMapper->https = $config['netric']['usehttps'];
-                    return $dataMapper;
-                },
-                        
-                // Get the api configured datamapper
-                'DataMapperApi' => function($sm) {
-                    $config = $sm->get('Config');
-
-                    $dataMapper = new \Netric\Models\DataMapper\ApiDataMapper($config["netric"]["server"], 
-                                                                                  $config["netric"]["username"],
-                                                                                  $config["netric"]["password"]);
-                    $dataMapper->https = $config['netric']['usehttps'];
-                    return $dataMapper;
                 },
 
                 'NetricApi' => function($sm) {
@@ -77,16 +52,10 @@ class Module
                     );
                 },
                         
-                'PostLoader' => function($sm) {
-					// Create new postloader inject the data mapper
-					$pl = new PostLoader($sm->get("PostDataMapper"));
-					return $pl;
-				},
-
-                // Return a referenec to an identitymapper for loading entities
+                // Return a reference to an identitymapper for loading entities
                 'Searcher' => function($sm) {          
-					$dm = $sm->get("DataMapper");
-					$searcher = new \Netric\Search\Searcher($dm);
+					$netricApi = $sm->get("NetricApi");
+					$searcher = new \Netric\Search\Searcher($netricApi);
                     return $searcher;
                 },
 				
