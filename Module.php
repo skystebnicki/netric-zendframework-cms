@@ -11,6 +11,7 @@ namespace Netric;
 
 use Zend\Mvc\ModuleRouteListener;
 use Zend\Mvc\MvcEvent;
+use NetricSDK\NetricApi;
 
 class Module
 {
@@ -41,27 +42,18 @@ class Module
                 
                 // Return a referenec to an identitymapper for loading entities
                 'EntityLoader' => function($sm) {          
-                    $im = new \Netric\Models\IdentityMap($sm->get("DataMapper"));
+                    $im = new \Netric\Models\IdentityMap($sm->get("NetricApi"));
                     return $im;
                 },
                         
                 // Get the local configured datamapper
                 'DataMapper' => function($sm) {
                     $config = $sm->get('Config');
-                    
-                    // Create datamapper based on configuration
-                    switch ($config["db"]["type"])
-                    {
-                    case "elastic":
-                        $dataMapper = new \Netric\Models\DataMapper\ElasticDataMapper($config["db"]["host"], 
-                                                                                      $config["db"]["name"]);
-                        break;
-                    
-                    default:
-                        $dataMapper = $sm->get("DataMapperApi");
-                        break;
-                    }
-            
+
+                    $dataMapper = new \Netric\Models\DataMapper\ApiDataMapper($config["netric"]["server"],
+                        $config["netric"]["username"],
+                        $config["netric"]["password"]);
+                    $dataMapper->https = $config['netric']['usehttps'];
                     return $dataMapper;
                 },
                         
@@ -75,6 +67,15 @@ class Module
                     $dataMapper->https = $config['netric']['usehttps'];
                     return $dataMapper;
                 },
+
+                'NetricApi' => function($sm) {
+                    $config = $sm->get('Config');
+                    return new NetricApi(
+                        $config["netric"]["server"],
+                        $config["netric"]["applicationId"],
+                        $config["netric"]["applicationKey"]
+                    );
+                },
                         
                 'PostLoader' => function($sm) {
 					// Create new postloader inject the data mapper
@@ -85,10 +86,7 @@ class Module
                 // Return a referenec to an identitymapper for loading entities
                 'Searcher' => function($sm) {          
 					$dm = $sm->get("DataMapper");
-
 					$searcher = new \Netric\Search\Searcher($dm);
-
-					
                     return $searcher;
                 },
 				

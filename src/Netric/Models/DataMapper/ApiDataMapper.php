@@ -1,10 +1,10 @@
 <?php
-/*
- * This is the api data mapper that will gather object data from netric through the REST api
- */
 namespace Netric\Models\DataMapper;
 use Netric\Models;
 
+/*
+ * This is the api data mapper that will gather object data from netric through the REST api
+ */
 class ApiDataMapper extends Models\DataMapperAbstract  implements Models\DataMapperInterface
 {
     /**

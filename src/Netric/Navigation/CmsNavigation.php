@@ -3,6 +3,8 @@ namespace Netric\Navigation;
  
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Navigation\Service\DefaultNavigationFactory;
+use NetricSDK\EntityCollection\EntityCollection;
+
  
 class CmsNavigation extends DefaultNavigationFactory
 {
@@ -121,6 +123,7 @@ class CmsNavigation extends DefaultNavigationFactory
 		$config = $serviceLocator->get('Config');
 		$pages = array();
 
+		/*
 		// Get pages
 		// ----------------------------------------------------
 		$entLoader = $serviceLocator->get('EntityLoader');
@@ -168,5 +171,56 @@ class CmsNavigation extends DefaultNavigationFactory
 		}
 
 		return $pages;
+		*/
+
+        // Get pages
+        // ----------------------------------------------------
+        $netricApi = $serviceLocator->get('NetricApi');
+        $pageCollection = $netricApi->createEntityCollection("cms_page");
+        $pageCollection->where("site_id")->equals($config['netric']['site_id']);
+        if ($parentId)
+        {
+            $pageCollection->andWhere("parent_id")->equals($parentId);
+        }
+        else
+        {
+            $pageCollection->andWhere("f_navmain")->equals(true);
+        }
+
+        // TODO: status
+        $pageCollection->orderBy("sort_order", "ASC");
+        $num = $pageCollection->load();
+        for ($i = 0; $i < $num; $i++)
+        {
+            $page = $pageCollection->getEntity($i);
+            $template = ($page->getValue("template_id")) ?
+                $netricApi->getEntity("cms_page_template", $page->getValue("template_id")) : null;
+
+            // Add page
+            if ($template)
+            {
+                $pages[$page->getValue("uname")] = array(
+                    'label' => $page->getValue("name"),
+                    'route' => $template->getValue("module"),
+                    'id' => $page->getValue("id"),
+                );
+            }
+            else
+            {
+                $pages[$page->getValue("uname")] = array(
+                    'label' => $page->getValue("name"),
+                    'uri' => $uriPre . '/' . $page->getValue("uname"),
+                    'id' => $page->getValue("id"),
+                );
+            }
+
+            // Check for children
+            $children = $this->getCmsPages($serviceLocator, $uriPre . '/' . $page->getValue("uname"), $page->getValue("id"));
+            if (count($children))
+                $pages[$page->getValue("uname")]['pages'] = $children;
+        }
+
+        return $pages;
+
 	}
 }

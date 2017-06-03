@@ -4,16 +4,18 @@
  * by keeping every loaded object in a map and look it up before loading the data in the datamapper
  */
 namespace Netric\Models;
-use Netric\Models\DataMapperInterface;
+use NetricSDK\NetricApi;
+use NetricSDK\Entity\Entity;
+use NetricSDK\EntityCollection\EntityCollection;
 
 class IdentityMap
 {
     /**
      * The current data mapper we are using for this object
      * 
-     * @var DataMapperInterface
+     * @var NetricApi $netricApi Used to load entities from the server
      */
-	protected $dataMapper = null;
+	protected $netricApi = null;
     
     /**
      * Array of loaded entities
@@ -25,12 +27,12 @@ class IdentityMap
     /**
      * Setup IdentityMapper for loading objects
      * 
-     * @param \Netric\Models\DataMapper\DataMapperInterface $dm
-     * @return \Netric\Models\DataMapper\IdentityMap
+     * @param NetricApi $netricApi
+     * @return IdentityMap
      */
-    public function __construct(DataMapperInterface $dm)
+    public function __construct(NetricApi $netricApi)
 	{
-		$this->dataMapper = $dm;
+		$this->netricApi = $netricApi;
 		return $this;
 	}
     
@@ -51,9 +53,9 @@ class IdentityMap
         }
         else
         {
-            $obj = $this->dataMapper->fetchById($objType, $id);
-            $this->loadedEntities[$key] = $obj;
-            return $obj;
+            $entity = $this->netricApi->getEntity($objType, $id);
+            $this->loadedEntities[$key] = $entity;
+            return $entity;
         }
     }
 
@@ -158,22 +160,10 @@ class IdentityMap
      * Create a collection object and inject datamapper
      * 
      * @param string $objType
-     * @return \Netric\Models\EntityCollection
+     * @return EntityCollection
      */
     public function createCollection($objType)
     {
-        $collection = new EntityCollection($objType);
-        $collection->setDataMapper($this->dataMapper);
-        return $collection;
-    }
-    
-    /**
-     * Get datamapper
-     * 
-     * @return \Netric\Models\DataMapperInterface
-     */
-    public function getDataMapper()
-    {
-        return $this->dataMapper;
+        return $this->netricApi->createEntityCollection($objType);
     }
 }
