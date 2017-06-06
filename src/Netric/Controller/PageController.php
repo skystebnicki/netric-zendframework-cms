@@ -27,8 +27,8 @@ class PageController extends AbstractActionController
 		// Get the page from the datastore
 		if ($view->page)
 		{
-        	$entLoader = $this->getServiceLocator()->get('EntityLoader');
-			$page = $entLoader->getByUnamePath("cms_page", $view->page);
+        	$netricApi = $this->getServiceLocator()->get('NetricApi');
+			$page = $netricApi->getEntityByUniqueName("cms_page", $view->page);
 
 			if ($page)
 			{
@@ -42,8 +42,8 @@ class PageController extends AbstractActionController
 				 * Get child pages
 				 */
 				$subnavPages = array();
-				$entLoader = $this->getServiceLocator()->get('EntityLoader');
-				$pageCollection = $entLoader->createCollection("cms_page");
+				$netricApi = $this->getServiceLocator()->get('NetricApi');
+				$pageCollection = $netricApi->createEntityCollection("cms_page");
 				$pageCollection->where("parent_id")->equals($page->getValue("id"));
 				//$pageCollection->where("f_navmain")->equals(true);
 				// TODO: status
@@ -62,13 +62,13 @@ class PageController extends AbstractActionController
 				else if ($page->getValue("parent_id"))
 				{
 					// If there are no child pages to this page, look to the parent page for children at the same level
-					$pageCollection = $entLoader->createCollection("cms_page");
+					$pageCollection = $netricApi->createEntityCollection("cms_page");
 					$pageCollection->where("parent_id")->equals($page->getValue("parent_id"));
 					$pageCollection->orderBy("sort_order", "ASC");
 					$num = $pageCollection->load();
 
 					// First entry is the parent page
-					$subnavPages[] = $entLoader->get("cms_page", $page->getValue("parent_id"));;
+					$subnavPages[] = $netricApi->getEntity("cms_page", $page->getValue("parent_id"));;
 
 					// Add all children
 					for ($i = 0; $i < $num; $i++)

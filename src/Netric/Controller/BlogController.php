@@ -19,19 +19,29 @@ class BlogController extends AbstractActionController
     public function indexAction()
     {
         $config = $this->getServiceLocator()->get('Config');
-        $entLoader = $this->getServiceLocator()->get('EntityLoader');
+        $netricApi = $this->getServiceLocator()->get('NetricApi');
         $catId = $this->getEvent()->getRouteMatch()->getParam("cat");
-       
-        if ($catId)
-            $cat = $dm = $entLoader->getDataMapper()->getGroupingById("content_feed_post", "categories", $catId);
-        
+        $groupings = $netricApi->getEntityGroupings(
+            "content_feed_post",
+            "categories",
+            array("feed_id"=>$config['netric']['blog_feed_id'])
+        );
+
+        if ($catId) {
+            foreach ($$groupings as $group) {
+                if ($group->id == $catId) {
+                 $cat = $group;
+                }
+            }
+        }
+
         // Get blog feed
         // ----------------------------------------------------
-        $feed = $entLoader->get("content_feed", $config['netric']['blog_feed_id']);
+        $feed = $netricApi->getEntity("content_feed", $config['netric']['blog_feed_id']);
         
         // Get posts
         // ----------------------------------------------------
-        $postCollection = $entLoader->createCollection("content_feed_post");
+        $postCollection = $netricApi->createEntityCollection("content_feed_post");
         $postCollection->where("feed_id")->equals($config['netric']['blog_feed_id']);
         $postCollection->where("f_publish")->equals(true);
         if ($catId)
@@ -58,12 +68,7 @@ class BlogController extends AbstractActionController
         $categoriesView = new ViewModel();
 		$categoriesView->currentCategory = $catId;
         $categoriesView->setTemplate("blog/categories"); // Use $config / view_manager/template_map to override in global config
-        $dm = $entLoader->getDataMapper();
-        $categoriesView->categories = $dm->getGroupings(
-            "content_feed_post", 
-            "categories", 
-            array("feed_id"=>$config['netric']['blog_feed_id'])
-        );
+        $categoriesView->categories = $groupings;
         $view->addChild($categoriesView, 'categories');
         
         // Get the subscription subview if set
@@ -93,10 +98,10 @@ class BlogController extends AbstractActionController
     public function postAction()
     {
 		$uname = $this->getEvent()->getRouteMatch()->getParam("uname");
-        $entLoader = $this->getServiceLocator()->get('EntityLoader');
+        $netricApi = $this->getServiceLocator()->get('NetricApi');
         $config = $this->getServiceLocator()->get('Config');
         
-        $post = $entLoader->get("content_feed_post", "uname:" . $uname);
+        $post = $netricApi->getEntityByUniqueName("content_feed_post", $uname);
 
         $view = new ViewModel();
         $view->setTemplate("blog/post"); // Use $config / view_manager/template_map to override in global config
@@ -164,38 +169,24 @@ class BlogController extends AbstractActionController
 	public function feedAction()
 	{
 		$config = $this->getServiceLocator()->get('Config');
-        $entLoader = $this->getServiceLocator()->get('EntityLoader');
+        $netricApi = $this->getServiceLocator()->get('NetricApi');
        
         
         // Get blog feed
         // ----------------------------------------------------
-        $contentFeed = $entLoader->get("content_feed", $config['netric']['blog_feed_id']);
+        $contentFeed = $netricApi->getEntity("content_feed", $config['netric']['blog_feed_id']);
 
 		$feed = new Zend\Feed\Writer\Feed;
 		$feed->setTitle($contentFeed->getValue("title"));
 		$feed->setDescription(($contentFeed->getValue("description")) ? $contentFeed->getValue("description") : $contentFeed->getValue("title"));
 		$feed->setLink('http://' . $_SERVER['SERVER_NAME']);
 		$feed->setFeedLink('http://' . $_SERVER['SERVER_NAME'] . "/blog/feed/rss", 'rss');
-		/*
-		$feed->setTitle('Paddy\'s Blog');
-		$feed->setLink('http://www.example.com');
-		$feed->setFeedLink('http://www.example.com/atom', 'atom');
-		$feed->addAuthor(array(
-			'name'  => 'Paddy',
-			'email' => 'paddy@example.com',
-			'uri'   => 'http://www.example.com',
-		));
-		$feed->setDateModified(time());
-		$feed->addHub('http://pubsubhubbub.appspot.com/');
-		 */
-
-
 
         // Get posts
         // ----------------------------------------------------
-        $postCollection = $entLoader->createCollection("content_feed_post");
+        $postCollection = $netricApi->createEntityCollection("content_feed_post");
         $postCollection->where("feed_id")->equals($config['netric']['blog_feed_id']);
-        $postCollection->where("f_publish")->equals(true);
+        $postCollection->andWhere("f_publish")->equals(true);
         if ($catId)
             $postCollection->where("categories")->equals($catId);
         $postCollection->orderBy("time_entered", "DESC");

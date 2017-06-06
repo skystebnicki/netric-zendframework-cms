@@ -116,62 +116,14 @@ class CmsNavigation extends DefaultNavigationFactory
 	 *
 	 * @param ServiceLocatorInterface $serviceLocator Application service locator
 	 * @param int parentId Optional parent id for recurrsively building config
-	 * @return associative array of pages in config format
+	 * @return array of pages in config format
 	 */
 	private function getCmsPages(ServiceLocatorInterface $serviceLocator, $uriPre="", $parentId=null)
 	{
 		$config = $serviceLocator->get('Config');
 		$pages = array();
 
-		/*
-		// Get pages
-		// ----------------------------------------------------
-		$entLoader = $serviceLocator->get('EntityLoader');
-		$pageCollection = $entLoader->createCollection("cms_page");
-		$pageCollection->where("site_id")->equals($config['netric']['site_id']);
-		if ($parentId)
-		{
-			$pageCollection->where("parent_id")->equals($parentId);
-		}
-		else
-		{
-			$pageCollection->where("f_navmain")->equals(true);
-		}
-
 		// TODO: status
-		$pageCollection->orderBy("sort_order", "ASC");
-		$num = $pageCollection->load();
-		for ($i = 0; $i < $num; $i++)
-		{
-			$page = $pageCollection->getEntity($i);
-			$template = ($page->getValue("template_id")) ? $entLoader->get("cms_page_template", $page->getValue("template_id")) : null;
-			
-			// Add page
-			if ($template)
-			{
-				$pages[$page->getValue("uname")] = array(
-					'label' => $page->getValue("name"),
-					'route' => $template->getValue("module"),
-					'id' => $page->getValue("id"),
-				);
-			}
-			else
-			{
-				$pages[$page->getValue("uname")] = array(
-					'label' => $page->getValue("name"),
-					'uri' => $uriPre . '/' . $page->getValue("uname"),
-					'id' => $page->getValue("id"),
-				);
-			}
-
-			// Check for children
-			$children = $this->getCmsPages($serviceLocator, $uriPre . '/' . $page->getValue("uname"), $page->getValue("id"));
-			if (count($children))
-				$pages[$page->getValue("uname")]['pages'] = $children;
-		}
-
-		return $pages;
-		*/
 
         // Get pages
         // ----------------------------------------------------
@@ -193,8 +145,11 @@ class CmsNavigation extends DefaultNavigationFactory
         for ($i = 0; $i < $num; $i++)
         {
             $page = $pageCollection->getEntity($i);
-            $template = ($page->getValue("template_id")) ?
-                $netricApi->getEntity("cms_page_template", $page->getValue("template_id")) : null;
+            $template = null;
+            if ($page->getValue("template_id")) {
+                //$templateData = $page->getValue("template_id");
+                //$template = $netricApi->getEntity("cms_page_template", $templateData['id']);
+            }
 
             // Add page
             if ($template)

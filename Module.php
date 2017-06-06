@@ -36,12 +36,6 @@ class Module
 		return array(
 			'factories' => array(
 				'CmsNavigation' => 'Netric\Navigation\CmsNavigationFactory',
-                
-                // Return a referenec to an identitymapper for loading entities
-                'EntityLoader' => function($sm) {          
-                    $im = new \Netric\Models\IdentityMap($sm->get("NetricApi"));
-                    return $im;
-                },
 
                 'NetricApi' => function($sm) {
                     $config = $sm->get('Config');

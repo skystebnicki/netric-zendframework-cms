@@ -23,12 +23,12 @@ class ServicesTest extends PHPUnit_Framework_TestCase
     /**
      * Test the get entity loader service
      */
-	public function testEntityLoader()
+	public function testNetricApi()
 	{
         $sm = \NetricTest\Bootstrap::getServiceManager();
         $this->assertInstanceOf("Zend\ServiceManager\ServiceManager", $sm);
         
-        $loader = $sm->get("EntityLoader");
-        $this->assertInstanceOf("Netric\Models\IdentityMap", $loader);
+        $loader = $sm->get("NetricApi");
+        $this->assertInstanceOf("NetricSDK\NetricApi", $loader);
     }
 }

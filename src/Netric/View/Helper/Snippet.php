@@ -50,11 +50,8 @@ class Snippet extends AbstractHelper
             return 'ERROR: service manager not set';
         }
         
-        $entLoader = $this->serviceManager->get('EntityLoader');
-        
-        // Get the ministry by the uname
-        $snippet = $entLoader->get("cms_snippet", $id);
- 
+        $netricApi = $this->serviceManager->get('NetricApi');
+        $snippet = $netricApi->getEntity("cms_snippet", $id);
         return $snippet->getValue("data");
     }
 }
