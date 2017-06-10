@@ -1,11 +1,22 @@
 <?php
 /**
- * Zend Framework (http://framework.zend.com/)
+ * Netric CMS (http://www.netric.com/)
  *
  * @link      http://github.com/zendframework/ZendSkeletonApplication for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @copyright Copyright (c) 2012-2017 Aereus
  */
+
+use NetricZend\Controller\PageController;
+use NetricZend\Controller\SearchController;
+use NetricZend\Controller\BlogController;
+use NetricZend\Controller\ApiController;
+use NetricSDK\NetricApi;
+use NetricZend\Navigation\CmsNavigationFactory;
+use NetricZend\Search\SearcherFactory;
+
+use Zend\Mvc\Router\Http\Literal;
+use Zend\I18n\Translator\TranslatorServiceFactory;
+use Zend\ServiceManager\Factory\InvokableFactory;
 
 return array(
     'router' => array(
@@ -17,7 +28,7 @@ return array(
 					//'regex' => '/(?<page>.*)',
 					'regex' => '/(?P<page>.*)',
 					'defaults' => array(
-						'controller' => 'Netric\Controller\Page',
+						'controller' => PageController::class,
 						'action'     => 'index',
 					),
 					'spec' => '%page%',
@@ -27,11 +38,11 @@ return array(
             
             // Catch all for netric api
             'netric' => array(
-                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'type' => Literal::class,
                 'options' => array(
                     'route'    => '/netric',
                     'defaults' => array(
-                        '__NAMESPACE__' => 'Netric\Controller',
+                        '__NAMESPACE__' => 'NetricZend\Controller',
                         'controller' => 'Api',
                         'action'     => 'index',
                     ),
@@ -57,11 +68,11 @@ return array(
 
 			// Search
             'search' => array(
-                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'type' => Literal::class,
                 'options' => array(
                     'route'    => '/search',
                     'defaults' => array(
-						'controller' => 'Netric\Controller\Search',
+						'controller' => SearchController::class,
 						'action'     => 'index',
                     ),
                 ),
@@ -70,11 +81,11 @@ return array(
 
 			// Legacy api Router
             'antapi' => array(
-                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'type' => Literal::class,
                 'options' => array(
                     'route'    => '/antapi',
                     'defaults' => array(
-                        '__NAMESPACE__' => 'Netric\Controller',
+                        '__NAMESPACE__' => 'NetricZend\Controller',
                         'controller' => 'Api',
                         'action'     => 'index',
                     ),
@@ -100,11 +111,11 @@ return array(
 
 
             'blog' => array(
-                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'type' => Literal::class,
                 'options' => array(
                     'route'    => '/blog',
                     'defaults' => array(
-                        'controller' => 'Netric\Controller\Blog',
+                        'controller' => BlogController::class,
                         'action'     => 'index',
                     ),
                 ),
@@ -131,7 +142,7 @@ return array(
 				"options" => array(
 					"route"	=>  "/blog/category/[:cat]",
                     'defaults' => array(
-                        'controller' => 'Netric\Controller\Blog',
+                        'controller' => BlogController::class,
                         'action'     => 'index',
                     ),
 				),
@@ -143,7 +154,7 @@ return array(
 				"options" => array(
 					"route"	=>  "/blog/feed/[:format]",
                     'defaults' => array(
-                        'controller' => 'Netric\Controller\Blog',
+                        'controller' => BlogController::class,
                         'action'     => 'feed',
                     ),
 				),
@@ -155,7 +166,7 @@ return array(
 				"options" => array(
 					"route"	=>  "/blog/posts/[:uname]",
                     'defaults' => array(
-                        'controller' => 'Netric\Controller\Blog',
+                        'controller' => BlogController::class,
                         'action'     => 'posts',
                     ),
 				),
@@ -167,7 +178,7 @@ return array(
 				"options" => array(
 					"route"	=>  "/blog/All/[:uname]",
                     'defaults' => array(
-                        'controller' => 'Netric\Controller\Blog',
+                        'controller' => BlogController::class,
                         'action'     => 'all',
                     ),
 				),
@@ -179,18 +190,19 @@ return array(
 				"options" => array(
 					"route"	=>  "/blog/[:uname]",
                     'defaults' => array(
-                        'controller' => 'Netric\Controller\Blog',
+                        'controller' => BlogController::class,
                         'action'     => 'post',
                     ),
 				),
 			),
         ),
     ),
+
     // Setup netric configs
     'netric' => array(
-        'server' => 'localhost',
-        'username' => 'administrator',
-        'password' => 'Password1',
+        'server' => 'https://aereus.netric.com',
+        'applicationId' => '',
+        'applicationKey' => '',
         'usehttps' => false,
         'site_id' => 1,
 		'blog_feed_id' => 1,
@@ -229,17 +241,23 @@ return array(
 			),
 		),
     ),
-    // Local database settings
-    'db' => array(
-        'type' => "elastic",
-        'host' => "localhost",
-        'name' => "netric_cms",
-        'username' => "",
-        'password' => "",
-    ),
     'service_manager' => array(
         'factories' => array(
-            'translator' => 'Zend\I18n\Translator\TranslatorServiceFactory',
+            'translator' => TranslatorServiceFactory::class,
+
+            'CmsNavigation' => CmsNavigationFactory::class,
+
+            'NetricApi' => function($sm) {
+                $config = $sm->get('Config');
+                return new NetricApi(
+                    $config["netric"]["server"],
+                    $config["netric"]["applicationId"],
+                    $config["netric"]["applicationKey"]
+                );
+            },
+
+            // Return a reference to an identitymapper for loading entities
+            'NetricSearcher' => SearcherFactory::class,
         ),
     ),
     'translator' => array(
@@ -254,10 +272,10 @@ return array(
     ),
     'controllers' => array(
         'invokables' => array(
-            'Netric\Controller\Blog' => 'Netric\Controller\BlogController',
-            'Netric\Controller\Page' => 'Netric\Controller\PageController',
-            'Netric\Controller\Api' => 'Netric\Controller\ApiController',
-            'Netric\Controller\Search' => 'Netric\Controller\SearchController',
+            'NetricZend\Controller\BlogController' => BlogController::class,
+            'NetricZend\Controller\PageController' => PageController::class,
+            'NetricZend\Controller\ApiController' => ApiController::class,
+            'NetricZend\Controller\SearchController' => SearchController::class,
         ),
     ),
     'view_manager' => array(
@@ -282,14 +300,6 @@ return array(
         ),
         'template_path_stack' => array(
             __DIR__ . '/../view',
-        ),
-    ),
-    // Add public assets
-    'asset_manager' => array(
-        'resolver_configs' => array(
-            'paths' => array(
-                'Application' => __DIR__ . '/../public',
-            ),
         ),
     ),
 );

@@ -1,0 +1,48 @@
+{
+  "name": "skystebnicki.com",
+  "description": "Sky's Blog",
+  "license": "Commercial",
+  "keywords": [
+    "sky",
+    "stebnicki"
+  ],
+  "homepage": "http://www.skystebnicki.com/",
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/skystebnicki/netric-sdk-php"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "NetricZend\\": "src/NetricZend/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "NetricZendTest\\": "test/NetricZendTest/"
+    }
+  },
+  "require": {
+    "php": "^5.6 || ^7.0",
+    "netric/sdk-php": "master@dev",
+    "zendframework/zend-servicemanager": "2.4.*",
+    "zendframework/zend-mvc": "2.4.*",
+    "zendframework/zend-modulemanager": "2.4.*",
+    "zendframework/zend-loader": "2.4.*",
+    "zendframework/zend-navigation": "2.4.*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "6.2.*",
+    "squizlabs/php_codesniffer": "*"
+  },
+  "scripts": {
+    "cs-check": "vendor/bin/phpcs",
+    "cs-fix": "phpcbf",
+    "development-disable": "zf-development-mode disable",
+    "development-enable": "zf-development-mode enable",
+    "development-status": "zf-development-mode status",
+    "serve": "php -S 0.0.0.0:8080 -t public public/index.php",
+    "test": "vendor/bin/phpunit"
+  }
+}

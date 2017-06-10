@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit bootstrap="Bootstrap.php" colors="false">
+<phpunit bootstrap="Bootstrap.php" colors="true">
 	<!--
 	<php>
 		<env name="ZF2_PATH" value="../../../vendor/ZF2/library"/>
 	</php>
 	-->
     <testsuites>
-        <testsuite name="netriccms">
-            <directory>./NetricTest</directory>
+        <testsuite name="NetricZend">
+            <directory>./NetricZendTest</directory>
         </testsuite>
     </testsuites>
 </phpunit>

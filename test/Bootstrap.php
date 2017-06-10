@@ -1,18 +1,21 @@
 <?php
 
-namespace NetricTest;
+namespace NetricZendTest;
 
+/*
 use Zend\Loader\AutoloaderFactory;
 use Zend\Mvc\Service\ServiceManagerConfig;
 use Zend\ServiceManager\ServiceManager;
 use RuntimeException;
+*/
 
 error_reporting(E_ALL | E_STRICT);
-chdir(__DIR__);
+
+require_once(__DIR__ . "/../vendor/autoload.php");
 
 /**
  * Test bootstrap, for setting up autoloading
- */
+ *
 class Bootstrap
 {
     protected static $serviceManager;
@@ -97,3 +100,4 @@ class Bootstrap
 }
 
 Bootstrap::init();
+*/

@@ -7,8 +7,10 @@
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
-namespace Netric;
+namespace NetricZend;
 
+use NetricZend\Navigation\CmsNavigationFactory;
+use NetricZend\Search\Searcher;
 use Zend\Mvc\ModuleRouteListener;
 use Zend\Mvc\MvcEvent;
 use NetricSDK\NetricApi;
@@ -28,35 +30,6 @@ class Module
         return include __DIR__ . '/config/module.config.php';
     }
 
-	public function getServiceConfig()
-	{
-		// This is an example of how a service can be called
-		// from a controller with:
-		// $postloader = $this->getServiceLocator()->get("PostLoader");
-		return array(
-			'factories' => array(
-				'CmsNavigation' => 'Netric\Navigation\CmsNavigationFactory',
-
-                'NetricApi' => function($sm) {
-                    $config = $sm->get('Config');
-                    return new NetricApi(
-                        $config["netric"]["server"],
-                        $config["netric"]["applicationId"],
-                        $config["netric"]["applicationKey"]
-                    );
-                },
-                        
-                // Return a reference to an identitymapper for loading entities
-                'Searcher' => function($sm) {          
-					$netricApi = $sm->get("NetricApi");
-					$searcher = new \Netric\Search\Searcher($netricApi);
-                    return $searcher;
-                },
-				
-			),
-		);
-	}
-    
     public function getViewHelperConfig()
     {
         return array(
@@ -76,7 +49,6 @@ class Module
             'Zend\Loader\StandardAutoloader' => array(
                 'namespaces' => array(
                     __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
-                    "Elastica" => __DIR__ . '/src/Elastica',
                 ),
             ),
         );
