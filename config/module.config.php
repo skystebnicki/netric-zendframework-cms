@@ -203,6 +203,10 @@ return array(
         'server' => 'https://aereus.netric.com',
         'applicationId' => '',
         'applicationKey' => '',
+        'cache' => array(
+            'type' => 'none',
+            'server' => 'serverhost'
+        ),
         'usehttps' => false,
         'site_id' => 1,
 		'blog_feed_id' => 1,
@@ -249,10 +253,12 @@ return array(
 
             'NetricApi' => function($sm) {
                 $config = $sm->get('Config');
+                $cacheConfig = isset($config['netric']['cache']) ? $config['netric']['cache'] : null;
                 return new NetricApi(
                     $config["netric"]["server"],
                     $config["netric"]["applicationId"],
-                    $config["netric"]["applicationKey"]
+                    $config["netric"]["applicationKey"],
+                    $cacheConfig
                 );
             },
 
