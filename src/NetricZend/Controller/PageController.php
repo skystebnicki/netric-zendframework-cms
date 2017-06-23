@@ -23,12 +23,13 @@ class PageController extends AbstractActionController
         $view->setTemplate("cms/page");
 
 		$view->page = $this->getEvent()->getRouteMatch()->getParam("page");
+		$config = $this->getServiceLocator()->get('Config');
 
 		// Get the page from the datastore
 		if ($view->page)
 		{
         	$netricApi = $this->getServiceLocator()->get('NetricApi');
-			$page = $netricApi->getEntityByUniqueName("cms_page", $view->page);
+			$page = $netricApi->getEntityByUniqueName("cms_page", $view->page, ['site_id'=>$config['netric']['site_id']]);
 
 			if ($page)
 			{
@@ -95,7 +96,7 @@ class PageController extends AbstractActionController
 		}
 
         $nav = $this->getServiceLocator()->get('CmsNavigation');
-        $navPage = $nav->findOneById($page->getId());
+        $navPage = $nav->findOneById($page->id);
 		if ($navPage)
 		{
         	$navPage->setActive();
