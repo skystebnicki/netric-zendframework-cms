@@ -147,7 +147,7 @@ class CmsNavigation extends DefaultNavigationFactory
             $page = $pageCollection->getEntity($i);
             $template = null;
             if ($page->getValue("template_id")) {
-                $template = $netricApi->getEntity("cms_page_template", $page->getValue("template_id")->if);
+                $template = $netricApi->getEntity("cms_page_template", $page->getValue("template_id")->id);
             }
 
             // Add page
