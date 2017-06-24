@@ -13,7 +13,7 @@
 				<?php foreach ($this->posts as $post) : ?>
 					<div class="mgb2">
 						<?php if ($post->getValue("image")) : ?> 
-							<img src="//<?php echo $this->netricServer; ?>/files/<?php echo $post->getValue("image"); ?>" class="pull-left img-responsiv" />
+							<img src="//<?php echo $this->netricServer; ?>/files/<?php echo $post->getValue("image")->id; ?>" class="pull-left img-responsiv" />
 						<?php endif; ?>
 						<a href="/blog/<?php echo $post->getValue("uname"); ?>" 
 						   title="<?php echo $post->getValue("title"); ?>">

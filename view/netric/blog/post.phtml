@@ -38,7 +38,7 @@
 			<div class="col-md-9">
 				<div class='blogArticle' id='blog-post-body'>
 					<?php if ($post->getValue("image")) : ?> 
-						<img src="//<?php echo $this->netricServer; ?>/files/<?php echo $post->getValue("image"); ?>" class="pull-left img-responsive" id="blog-post-image" />
+						<img src="//<?php echo $this->netricServer; ?>/files/<?php echo $post->getValue("image")->id; ?>" class="pull-left img-responsive" id="blog-post-image" />
 					<?php endif; ?>
 					<?php echo $this->post->getValue("data"); ?>
 				</div>
