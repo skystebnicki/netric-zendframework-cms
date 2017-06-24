@@ -6,7 +6,7 @@
 	$this->headMeta()->setProperty('og:description', $this->post->getTeaser(50));
 	$this->headMeta()->setProperty('description', $this->post->getTeaser(50));
 	if ($post->getValue("image"))
-		$this->headMeta()->setProperty('og:image', "http://{$this->netricServer}/files/" . $post->getValue("image"));
+		$this->headMeta()->setProperty('og:image', "http://{$this->netricServer}/files/" . $post->getValue("image")->id);
 ?>
 <div class='page'>
 	<div class='container'>
