@@ -1,27 +1,23 @@
 <?php
-/**
- * Controller used as an api callback
- *
- * @copyright Copyright (c) 2005-2013 Aereus Coproration
- * @author Sky Stebnicki (sky.stebnicki@aereus.com)
- */
-
 namespace NetricZend\Controller;
 
 use Zend\Mvc\Controller\AbstractActionController;
 
+/**
+ * Controller used as an api callback
+ */
 class ApiController extends AbstractActionController
 {
     public function indexAction()
     {
         $config = $this->getServiceLocator()->get('Config');
-        
+
         $response = $this->getResponse();
-        $response->setContent("Index"); 
+        $response->setContent("Index");
         return $response;
         //return new ViewModel();
     }
-    
+
     /**
      * Synchronize one object by grabbing from remote store and saving locally
      * 
@@ -32,22 +28,21 @@ class ApiController extends AbstractActionController
     {
         $otype = $this->getRequest()->getQuery("obj_type");
         $oid = $this->getRequest()->getQuery("oid");
-        
+
         $ret = 0;
-        
-        if ($otype && $oid)
-        {
+
+        if ($otype && $oid) {
             $dmLocal = $this->getServiceLocator()->get("DataMapper");
             $dmApi = $this->getServiceLocator()->get('DataMapperApi');
             $ret = $dmApi->syncOne($otype, $oid, $dmLocal);
         }
-        
+
         if (false === $ret)
             $ret = 0;
         
         // Return the id of the saved object, or 0 on failure
         $response = $this->getResponse();
-        $response->setContent($ret); 
+        $response->setContent($ret);
         return $response;
     }
 
@@ -59,8 +54,8 @@ class ApiController extends AbstractActionController
     {
 		// Creates cookies to allow user enter edit mode
         $expireTime = time() + 3600;
-		setcookie("cms_edit", "1", $expireTime, "/");
+        setcookie("cms_edit", "1", $expireTime, "/");
 
-		return $this->redirect()->toRoute('apphome');
+        return $this->redirect()->toRoute('apphome');
     }
 }

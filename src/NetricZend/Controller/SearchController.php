@@ -1,15 +1,13 @@
 <?php
-
-/**
- * Controller that handles basic blog functionality
- */
-
 namespace NetricZend\Controller;
 
 use Zend;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 
+/**
+ * Handle searching for site content
+ */
 class SearchController extends AbstractActionController
 {
 	/**

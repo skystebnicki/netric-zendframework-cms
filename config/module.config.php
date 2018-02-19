@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Netric CMS (http://www.netric.com/)
  *
@@ -10,6 +11,7 @@ use NetricZend\Controller\PageController;
 use NetricZend\Controller\SearchController;
 use NetricZend\Controller\BlogController;
 use NetricZend\Controller\ApiController;
+use NetricZend\Controller\FileController;
 use NetricSDK\NetricApi;
 use NetricZend\Navigation\CmsNavigationFactory;
 use NetricZend\Search\SearcherFactory;
@@ -22,44 +24,44 @@ return array(
     'router' => array(
         'routes' => array(
 			// CMS Catchall route
-			'cms' => array(
-				'type' => 'regex',
-				'options' => array(
+            'cms' => array(
+                'type' => 'regex',
+                'options' => array(
 					//'regex' => '/(?<page>.*)',
-					'regex' => '/(?P<page>.*)',
-					'defaults' => array(
-						'controller' => PageController::class,
-						'action'     => 'index',
-					),
-					'spec' => '%page%',
-				),
-				'priority' => -1000,
-			),
+                    'regex' => '/(?P<page>.*)',
+                    'defaults' => array(
+                        'controller' => PageController::class,
+                        'action' => 'index',
+                    ),
+                    'spec' => '%page%',
+                ),
+                'priority' => -1000,
+            ),
             
             // Catch all for netric api
             'netric' => array(
                 'type' => Literal::class,
                 'options' => array(
-                    'route'    => '/netric',
+                    'route' => '/netric',
                     'defaults' => array(
                         '__NAMESPACE__' => 'NetricZend\Controller',
                         'controller' => 'Api',
-                        'action'     => 'index',
+                        'action' => 'index',
                     ),
                 ),
                 'may_terminate' => true,
                 'child_routes' => array(
                     'default' => array(
-                        'type'    => 'Segment',
+                        'type' => 'Segment',
                         'options' => array(
-                            'route'    => '/[:controller[/:action]]',
+                            'route' => '/[:controller[/:action]]',
                             'constraints' => array(
                                 'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                                'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
+                                'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                             ),
                             'defaults' => array(
                                 'controller' => 'Netric\Controller\Api',
-                                'action'     => 'index',
+                                'action' => 'index',
                             ),
                         ),
                     ),
@@ -70,10 +72,10 @@ return array(
             'search' => array(
                 'type' => Literal::class,
                 'options' => array(
-                    'route'    => '/search',
+                    'route' => '/search',
                     'defaults' => array(
-						'controller' => SearchController::class,
-						'action'     => 'index',
+                        'controller' => SearchController::class,
+                        'action' => 'index',
                     ),
                 ),
                 'may_terminate' => true,
@@ -83,118 +85,129 @@ return array(
             'antapi' => array(
                 'type' => Literal::class,
                 'options' => array(
-                    'route'    => '/antapi',
+                    'route' => '/antapi',
                     'defaults' => array(
                         '__NAMESPACE__' => 'NetricZend\Controller',
                         'controller' => 'Api',
-                        'action'     => 'index',
+                        'action' => 'index',
                     ),
                 ),
                 'may_terminate' => true,
                 'child_routes' => array(
                     'default' => array(
-                        'type'    => 'Segment',
+                        'type' => 'Segment',
                         'options' => array(
-                            'route'    => '/[:action]',
+                            'route' => '/[:action]',
                             'constraints' => array(
                                 'controller' => 'Api',
-                                'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
+                                'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                             ),
                             'defaults' => array(
                                 'controller' => 'Netric\Controller\Api',
-                                'action'     => 'index',
+                                'action' => 'index',
                             ),
                         ),
                     ),
                 ),
             ),
 
-
+            // Handle blog routes
             'blog' => array(
                 'type' => Literal::class,
                 'options' => array(
-                    'route'    => '/blog',
+                    'route' => '/blog',
                     'defaults' => array(
                         'controller' => BlogController::class,
-                        'action'     => 'index',
+                        'action' => 'index',
                     ),
                 ),
                 'may_terminate' => true,
                 'child_routes' => array(
                     'default' => array(
-                        'type'    => 'Segment',
+                        'type' => 'Segment',
                         'options' => array(
-                            'route'    => '/[:controller[/:action]]',
+                            'route' => '/[:controller[/:action]]',
                             'constraints' => array(
                                 'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                                'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
+                                'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
                             ),
-                            'defaults' => array(
-                            ),
+                            'defaults' => array(),
                         ),
+                    ),
+                ),
+            ),
+
+            // Handle files route
+            'file' => array(
+                'type' => 'Segment',
+                "options" => array(
+                    "route" => "/file/[:file_id]",
+                    'defaults' => array(
+                        'controller' => FileController::class,
+                        'action' => 'download',
                     ),
                 ),
             ),
             
             // The following route is used to map blog categories
-			'blogCategories' => array(
-				'type'	=> 'Segment',
-				"options" => array(
-					"route"	=>  "/blog/category/[:cat]",
+            'blogCategories' => array(
+                'type' => 'Segment',
+                "options" => array(
+                    "route" => "/blog/category/[:cat]",
                     'defaults' => array(
                         'controller' => BlogController::class,
-                        'action'     => 'index',
+                        'action' => 'index',
                     ),
-				),
-			),
+                ),
+            ),
 
             // Blog Feed
-			'blogFeeds' => array(
-				'type'	=> 'Segment',
-				"options" => array(
-					"route"	=>  "/blog/feed/[:format]",
+            'blogFeeds' => array(
+                'type' => 'Segment',
+                "options" => array(
+                    "route" => "/blog/feed/[:format]",
                     'defaults' => array(
                         'controller' => BlogController::class,
-                        'action'     => 'feed',
+                        'action' => 'feed',
                     ),
-				),
-			),
+                ),
+            ),
 
 			// The following is used for legacy links to /posts/[uname]
-			'blogPostsLegacy' => array(
-				'type'	=> 'Segment',
-				"options" => array(
-					"route"	=>  "/blog/posts/[:uname]",
+            'blogPostsLegacy' => array(
+                'type' => 'Segment',
+                "options" => array(
+                    "route" => "/blog/posts/[:uname]",
                     'defaults' => array(
                         'controller' => BlogController::class,
-                        'action'     => 'posts',
+                        'action' => 'posts',
                     ),
-				),
-			),
+                ),
+            ),
 
 			// The following is used for legacy links to /All/[uname]
-			'blogAllLegacy' => array(
-				'type'	=> 'Segment',
-				"options" => array(
-					"route"	=>  "/blog/All/[:uname]",
+            'blogAllLegacy' => array(
+                'type' => 'Segment',
+                "options" => array(
+                    "route" => "/blog/All/[:uname]",
                     'defaults' => array(
                         'controller' => BlogController::class,
-                        'action'     => 'all',
+                        'action' => 'all',
                     ),
-				),
-			),
+                ),
+            ),
 
 			// The following route is used to map blog posts
-			'blogPost' => array(
-				'type'	=> 'Segment',
-				"options" => array(
-					"route"	=>  "/blog/[:uname]",
+            'blogPost' => array(
+                'type' => 'Segment',
+                "options" => array(
+                    "route" => "/blog/[:uname]",
                     'defaults' => array(
                         'controller' => BlogController::class,
-                        'action'     => 'post',
+                        'action' => 'post',
                     ),
-				),
-			),
+                ),
+            ),
         ),
     ),
 
@@ -209,41 +222,41 @@ return array(
         ),
         'usehttps' => false,
         'site_id' => 1,
-		'blog_feed_id' => 1,
-		'search' => array(
-			"enabled" => true,
-			"entities" => array(
-				array(
-					"obj_type" => "content_feed_post",
-					"label" => "Blog Post",
-					"url_base" => "/blog",
-					"conditions" => array(
-						"feed_id" => 1, // change for site
-					),
+        'blog_feed_id' => 1,
+        'search' => array(
+            "enabled" => true,
+            "entities" => array(
+                array(
+                    "obj_type" => "content_feed_post",
+                    "label" => "Blog Post",
+                    "url_base" => "/blog",
+                    "conditions" => array(
+                        "feed_id" => 1, // change for site
+                    ),
 					/*
 					"fields" => array(
 						"title",
 						"data",
 					)
-					 */
-				),
-				array(
-					"obj_type" => "cms_page",
-					"label" => "Page",
-					"url_base" => "/",
-					"conditions" => array(
-						"f_publish" => true,
-        				'site_id' => 1,
-					),
+                 */
+                ),
+                array(
+                    "obj_type" => "cms_page",
+                    "label" => "Page",
+                    "url_base" => "/",
+                    "conditions" => array(
+                        "f_publish" => true,
+                        'site_id' => 1,
+                    ),
 					/*
 					"fields" => array(
 						"name",
 						"data"
 					)
-					 */
-				),
-			),
-		),
+                 */
+                ),
+            ),
+        ),
     ),
     'service_manager' => array(
         'factories' => array(
@@ -251,7 +264,7 @@ return array(
 
             'CmsNavigation' => CmsNavigationFactory::class,
 
-            'NetricApi' => function($sm) {
+            'NetricApi' => function ($sm) {
                 $config = $sm->get('Config');
                 $cacheConfig = isset($config['netric']['cache']) ? $config['netric']['cache'] : null;
                 return new NetricApi(
@@ -270,9 +283,9 @@ return array(
         'locale' => 'en_US',
         'translation_file_patterns' => array(
             array(
-                'type'     => 'gettext',
+                'type' => 'gettext',
                 'base_dir' => __DIR__ . '/../language',
-                'pattern'  => '%s.mo',
+                'pattern' => '%s.mo',
             ),
         ),
     ),
@@ -282,25 +295,26 @@ return array(
             'NetricZend\Controller\PageController' => PageController::class,
             'NetricZend\Controller\ApiController' => ApiController::class,
             'NetricZend\Controller\SearchController' => SearchController::class,
+            'NetricZend\Controller\FileController' => FileController::class,
         ),
     ),
     'view_manager' => array(
         'display_not_found_reason' => true,
-        'display_exceptions'       => true,
-        'doctype'                  => 'HTML5',
-        'not_found_template'       => 'error/404',
-        'exception_template'       => 'error/index',
+        'display_exceptions' => true,
+        'doctype' => 'HTML5',
+        'not_found_template' => 'error/404',
+        'exception_template' => 'error/index',
         'template_map' => array(
             //'layout/layout'          => __DIR__ . '/../view/layout/layout.phtml',
-            'blog/index'               => __DIR__ . '/../view/netric/blog/index.phtml',
-            'blog/post'                => __DIR__ . '/../view/netric/blog/post.phtml',
-            'blog/categories'          => __DIR__ . '/../view/netric/snippets/blog_categories.phtml',
-            'blog/subscribe'           => __DIR__ . '/../view/netric/snippets/blog_subscribe.phtml',
-            'blog/about'               => __DIR__ . '/../view/netric/snippets/blog_about.phtml',
-            'sharethis'                => __DIR__ . '/../view/netric/snippets/share.phtml',
-            'comments'                 => __DIR__ . '/../view/netric/snippets/comments.phtml',
-            'breadcrumb'               => __DIR__ . '/../view/netric/snippets/breadcrumb.phtml',
-            'cms/page'                 => __DIR__ . '/../view/netric/page/index.phtml',
+            'blog/index' => __DIR__ . '/../view/netric/blog/index.phtml',
+            'blog/post' => __DIR__ . '/../view/netric/blog/post.phtml',
+            'blog/categories' => __DIR__ . '/../view/netric/snippets/blog_categories.phtml',
+            'blog/subscribe' => __DIR__ . '/../view/netric/snippets/blog_subscribe.phtml',
+            'blog/about' => __DIR__ . '/../view/netric/snippets/blog_about.phtml',
+            'sharethis' => __DIR__ . '/../view/netric/snippets/share.phtml',
+            'comments' => __DIR__ . '/../view/netric/snippets/comments.phtml',
+            'breadcrumb' => __DIR__ . '/../view/netric/snippets/breadcrumb.phtml',
+            'cms/page' => __DIR__ . '/../view/netric/page/index.phtml',
             //'error/404'              => __DIR__ . '/../view/error/404.phtml',
             //'error/index'            => __DIR__ . '/../view/error/index.phtml',
         ),

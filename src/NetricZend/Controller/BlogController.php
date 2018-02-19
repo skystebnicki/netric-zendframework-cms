@@ -1,14 +1,13 @@
 <?php
-/**
- * Controller that handles basic blog functionality
- */
-
 namespace NetricZend\Controller;
 
 use Zend;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 
+/**
+ * Controller that handles basic blog functionality
+ */
 class BlogController extends AbstractActionController
 {
     /**
@@ -24,13 +23,13 @@ class BlogController extends AbstractActionController
         $groupings = $netricApi->getEntityGroupings(
             "content_feed_post",
             "categories",
-            array("feed_id"=>$config['netric']['blog_feed_id'])
+            array("feed_id" => $config['netric']['blog_feed_id'])
         );
 
         if ($catId) {
             foreach ($$groupings as $group) {
                 if ($group->id == $catId) {
-                 $cat = $group;
+                    $cat = $group;
                 }
             }
         }
@@ -50,8 +49,7 @@ class BlogController extends AbstractActionController
         $postCollection->setLimit(20);
         $num = $postCollection->load();
         $posts = array();
-        for ($i = 0; $i < $num; $i++)
-        {
+        for ($i = 0; $i < $num; $i++) {
             $posts[] = $postCollection->getEntity($i);
         }
 
@@ -66,7 +64,7 @@ class BlogController extends AbstractActionController
         // Get the categories subview
         // ----------------------------------------------------
         $categoriesView = new ViewModel();
-		$categoriesView->currentCategory = $catId;
+        $categoriesView->currentCategory = $catId;
         $categoriesView->setTemplate("blog/categories"); // Use $config / view_manager/template_map to override in global config
         $categoriesView->categories = $groupings;
         $view->addChild($categoriesView, 'categories');
@@ -88,28 +86,28 @@ class BlogController extends AbstractActionController
         $commentsView = new ViewModel();
         $commentsView->setTemplate("comments"); // Use $config / view_manager/template_map to override in global config
         $view->addChild($commentsView, 'comments');
-        
+
         return $view;
     }
 
-	/**
-	 * Post view action
-	 */
+    /**
+     * Post view action
+     */
     public function postAction()
     {
-		$uname = $this->getEvent()->getRouteMatch()->getParam("uname");
+        $uname = $this->getEvent()->getRouteMatch()->getParam("uname");
         $netricApi = $this->getServiceLocator()->get('NetricApi');
         $config = $this->getServiceLocator()->get('Config');
-        
+
         $post = $netricApi->getEntityByUniqueName("content_feed_post", $uname);
 
         $view = new ViewModel();
         $view->setTemplate("blog/post"); // Use $config / view_manager/template_map to override in global config
         $view->title = $post->getValue("title");
-		$view->post = $post;	
-		$view->netricServer = $config['netric']['server'];
+        $view->post = $post;
+        $view->netricServer = $config['netric']['server'];
         $view->author = $post->getValue("author");
-        $view->dateAndTime = ($post->getValue("time_entered")) ? $post->getValue("time_entered") : $post->getValue("ts_updated") ;
+        $view->dateAndTime = ($post->getValue("time_entered")) ? $post->getValue("time_entered") : $post->getValue("ts_updated");
         
         // Get about information for this blog
         // ----------------------------------------------------
@@ -139,36 +137,36 @@ class BlogController extends AbstractActionController
         // ----------------------------------------------------
         $nav = $this->getServiceLocator()->get('CmsNavigation');
         $navPage = $nav->findOneById("blog");
-		if ($navPage)
-        	$navPage->setActive();
-        
+        if ($navPage)
+            $navPage->setActive();
+
         return $view;
     }
 
-	/**
-	 * Old Posts Redirect for legacy systems - zf1
-	 */
+    /**
+     * Old Posts Redirect for legacy systems - zf1
+     */
     public function postsAction()
     {
-		$uname = $this->getEvent()->getRouteMatch()->getParam("uname");
-		return $this->redirect()->toUrl("/blog/" . $uname, array('code'=>301));
-	}
+        $uname = $this->getEvent()->getRouteMatch()->getParam("uname");
+        return $this->redirect()->toUrl("/blog/" . $uname, array('code' => 301));
+    }
 
-	/**
-	 * Old Posts Redirect for legacy systems - zf1
-	 */
+    /**
+     * Old Posts Redirect for legacy systems - zf1
+     */
     public function allAction()
     {
-		$uname = $this->getEvent()->getRouteMatch()->getParam("uname");
-		return $this->redirect()->toUrl("/blog/" . $uname, array('code'=>301));
-	}
+        $uname = $this->getEvent()->getRouteMatch()->getParam("uname");
+        return $this->redirect()->toUrl("/blog/" . $uname, array('code' => 301));
+    }
 
-	/**
-	 * Render RSS feed
-	 */
-	public function feedAction()
-	{
-		$config = $this->getServiceLocator()->get('Config');
+    /**
+     * Render RSS feed
+     */
+    public function feedAction()
+    {
+        $config = $this->getServiceLocator()->get('Config');
         $netricApi = $this->getServiceLocator()->get('NetricApi');
        
         
@@ -176,11 +174,11 @@ class BlogController extends AbstractActionController
         // ----------------------------------------------------
         $contentFeed = $netricApi->getEntity("content_feed", $config['netric']['blog_feed_id']);
 
-		$feed = new Zend\Feed\Writer\Feed;
-		$feed->setTitle($contentFeed->getValue("title"));
-		$feed->setDescription(($contentFeed->getValue("description")) ? $contentFeed->getValue("description") : $contentFeed->getValue("title"));
-		$feed->setLink('http://' . $_SERVER['SERVER_NAME']);
-		$feed->setFeedLink('http://' . $_SERVER['SERVER_NAME'] . "/blog/feed/rss", 'rss');
+        $feed = new Zend\Feed\Writer\Feed;
+        $feed->setTitle($contentFeed->getValue("title"));
+        $feed->setDescription(($contentFeed->getValue("description")) ? $contentFeed->getValue("description") : $contentFeed->getValue("title"));
+        $feed->setLink('http://' . $_SERVER['SERVER_NAME']);
+        $feed->setFeedLink('http://' . $_SERVER['SERVER_NAME'] . "/blog/feed/rss", 'rss');
 
         // Get posts
         // ----------------------------------------------------
@@ -193,39 +191,38 @@ class BlogController extends AbstractActionController
         $postCollection->setLimit(500);
         $num = $postCollection->load();
         $posts = array();
-        for ($i = 0; $i < $num; $i++)
-        {
+        for ($i = 0; $i < $num; $i++) {
             $post = $postCollection->getEntity($i);
 
-			/**
-			 * Add one or more entries. Note that entries must
-			 * be manually added once created.
-			 */
-			$entry = $feed->createEntry();
-			$entry->setTitle($post->getValue('title'));
-			$entry->setLink('http://www.example.com/all-your-base-are-belong-to-us');
-			$entry->addAuthor(array(
-				'name'  => 'Paddy',
-				'email' => 'paddy@example.com',
-				'uri'   => 'http://www.example.com',
-			));
-			$entry->setDateModified(time());
-			$entry->setDateCreated(time());
-			$entry->setDescription('Exposing the difficultly of porting games to English.');
-			$entry->setContent("TEST"); // $post->getValue('data')
-			$feed->addEntry($entry);
+            /**
+             * Add one or more entries. Note that entries must
+             * be manually added once created.
+             */
+            $entry = $feed->createEntry();
+            $entry->setTitle($post->getValue('title'));
+            $entry->setLink('http://www.example.com/all-your-base-are-belong-to-us');
+            $entry->addAuthor(array(
+                'name' => 'Paddy',
+                'email' => 'paddy@example.com',
+                'uri' => 'http://www.example.com',
+            ));
+            $entry->setDateModified(time());
+            $entry->setDateCreated(time());
+            $entry->setDescription('Exposing the difficultly of porting games to English.');
+            $entry->setContent("TEST"); // $post->getValue('data')
+            $feed->addEntry($entry);
         }
 
-		/**
-		 * Render the resulting feed to Atom 1.0 and assign to $out.
-		 * You can substitute "atom" with "rss" to generate an RSS 2.0 feed.
-		 */
-		$out = $feed->export('rss');
+        /**
+         * Render the resulting feed to Atom 1.0 and assign to $out.
+         * You can substitute "atom" with "rss" to generate an RSS 2.0 feed.
+         */
+        $out = $feed->export('rss');
 
         // Return the content
         $response = $this->getResponse();
-        $response->getHeaders()->addHeaders(array('Content-type' => 'text/xml')); 
-        $response->setContent($out); 
+        $response->getHeaders()->addHeaders(array('Content-type' => 'text/xml'));
+        $response->setContent($out);
         return $response;
-	}
+    }
 }
